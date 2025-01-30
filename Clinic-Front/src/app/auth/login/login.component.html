@@ -1,0 +1,85 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+  <div @fadeAnimation
+       class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">Welcome Back</h2>
+        <p class="text-gray-600 mt-2">Please sign in to continue</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700">Email</label>
+          <div class="relative">
+            <input type="email"
+                   formControlName="email"
+                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                   [ngClass]="{'border-red-500': submitted && f['email'].errors}"
+                   placeholder="Enter your email">
+            <div *ngIf="submitted && f['email'].errors"
+                 @fadeAnimation
+                 class="absolute -bottom-5 left-0 text-red-500 text-xs">
+              Please enter a valid email
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700">Password</label>
+          <div class="relative">
+            <input type="password"
+                   formControlName="password"
+                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                   [ngClass]="{'border-red-500': submitted && f['password'].errors}"
+                   placeholder="Enter your password">
+            <div *ngIf="submitted && f['password'].errors"
+                 @fadeAnimation
+                 class="absolute -bottom-5 left-0 text-red-500 text-xs">
+              Password is required
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" class="rounded text-blue-500">
+            <span class="text-sm text-gray-600">Remember me</span>
+          </label>
+          <a routerLink="/forgot-password"
+             class="text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            Forgot Password?
+          </a>
+        </div>
+
+        <button type="submit"
+                class="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 transform hover:scale-[1.02]">
+          Sign In
+        </button>
+
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        <button type="button"
+                (click)="onGoogleLogin()"
+                class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200">
+          <img src="./assets/icons/google.svg" alt="Google" class="w-5 h-5">
+          <span>Sign in with Google</span>
+        </button>
+      </form>
+
+      <p class="mt-8 text-center text-sm text-gray-600">
+        Don't have an account?
+        <a routerLink="/signup"
+           class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+          Sign up
+        </a>
+      </p>
+    </div>
+  </div>
+</div>

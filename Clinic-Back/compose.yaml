@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  postgres-db:
+    image: postgres:13
+    container_name: postgres-clinic
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: clinic
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

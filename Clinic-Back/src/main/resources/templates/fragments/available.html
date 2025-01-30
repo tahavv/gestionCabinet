@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Doctor Availabilities</title>
+    <!-- Add CSS or Tailwind if you like -->
+</head>
+<body>
+<h1>All Doctors Availability</h1>
+
+<p>Showing slots between:
+    <span th:text="${startDate}"></span> and <span th:text="${endDate}"></span>
+</p>
+
+<!-- Example table: each row is a DoctorAvailabilityDTO -->
+<div th:fragment="availability">
+<table border="1">
+    <thead>
+    <tr>
+        <th>Doctor Name</th>
+        <th>Specialty</th>
+        <th>Available From</th>
+        <th>Available To</th>
+        <!-- etc, depending on fields in DoctorAvailabilityDTO -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="slot : ${availabilityList}">
+        <td th:text="${slot.doctorName}"></td>
+        <td th:text="${slot.specialty}"></td>
+        <td th:text="${slot.availableStart}"></td>
+        <td th:text="${slot.availableEnd}"></td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</body>
+</html>

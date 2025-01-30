@@ -1,0 +1,58 @@
+<nav class="bg-white border-b border-gray-200 fixed w-full z-30 top-0 shadow-sm">
+  <div class="px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-4">
+      <button (click)="onToggle()"
+              class="text-gray-500 hover:text-gray-600 focus:outline-none">
+        <i class="fas" [ngClass]="{'fa-times': isOpen, 'fa-bars': !isOpen}"></i>
+      </button>
+      <div>
+        <span class="text-xl font-semibold text-blue-600">{{clinicName}}</span>
+        <span class="text-sm text-gray-500 ml-2">| Admin Panel</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-6">
+      <!-- Notifications -->
+      <button class="relative text-gray-500 hover:text-gray-600">
+        <i class="fas fa-bell"></i>
+        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs
+                         rounded-full h-4 w-4 flex items-center justify-center">
+              3
+            </span>
+      </button>
+
+      <!-- Messages -->
+      <button class="relative text-gray-500 hover:text-gray-600">
+        <i class="fas fa-comment-medical"></i>
+        <span class="absolute -top-1 -right-1 bg-blue-500 text-white text-xs
+                         rounded-full h-4 w-4 flex items-center justify-center">
+              2
+            </span>
+      </button>
+
+      <!-- Profile Menu -->
+      <div class="relative">
+        <button (click)="toggleProfileMenu()"
+                class="flex items-center gap-2 text-gray-700 hover:text-gray-900">
+          <span>{{user.fullName | capitalize}}</span>
+          <i class="fas fa-chevron-down text-sm"></i>
+        </button>
+
+        <div *ngIf="showProfileMenu"
+             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <i class="fas fa-user-circle mr-2"></i> Profile
+          </a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <i class="fas fa-cog mr-2"></i> Settings
+          </a>
+          <hr class="my-1">
+          <button (click)="logout()"
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(to right, #9333ea, #6366f1);
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+            color: #333;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(to right, #9333ea, #6366f1);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #eee;
+        }
+        .warning {
+            color: #666;
+            font-size: 12px;
+            background-color: #fff8dc;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .link-fallback {
+            word-break: break-all;
+            color: #6366f1;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Welcome To EventMaster</h1>
+    </div>
+    <div class="content">
+        <p>Hello {{userName}},</p>
+
+        <p>An admin from EventMaster added you to the platfrom .Click the button below navigate to interface:</p>
+        <div class="warning">
+            <strong>⚠️ Security Notice:</strong> Don't this email with others ,this is one time password
+        </div>
+        <p>Password: <strong>{{password}}</strong></p>
+        <center>
+            <a href="{{link}}" class="button">Dashboard</a>
+        </center>
+
+        <p>If the button above doesn't work, copy and paste this link into your browser:</p>
+        <div class="link-fallback">{{link}}</div>
+
+    </div>
+    <div class="footer">
+        <p>© 2025 EventMaster. All rights reserved.</p>
+        <p>This is an automated message, please do not reply to this email.</p>
+    </div>
+</div>
+</body>
+</html>

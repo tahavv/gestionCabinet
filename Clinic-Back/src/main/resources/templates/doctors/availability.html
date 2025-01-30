@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<h2>Doctor Availability</h2>
+<p>Render or edit each doctor’s availability here.</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>Doctor</th>
+        <th>Schedule</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="doc : ${doctors}">
+        <td th:text="${doc.fullName}">Doctor Name</td>
+        <td>
+            <!-- For example, call doctorAvailabilityService in the controller
+                 to pass availability data here. -->
+            <p>Availability info…</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

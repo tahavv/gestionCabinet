@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/admin-styles.css}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</head>
+<body>
+<nav th:fragment="admin-navbar" class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+            <a th:href="@{/web/admin/dashboard}" class="flex items-center space-x-3">
+                <i class="fas fa-clinic-medical text-2xl"></i>
+                <span class="font-bold text-xl">ClinicPro</span>
+            </a>
+
+            <div class="hidden md:flex space-x-8">
+                <a th:href="@{/web/admin/dashboard}" class="nav-link">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <a th:href="@{/web/admin/appointments}" class="nav-link">
+                    <i class="fas fa-calendar-alt mr-2"></i>Appointments
+                </a>
+                <a th:href="@{/web/admin/doctors}" class="nav-link">
+                    <i class="fas fa-user-md mr-2"></i>Doctors
+                </a>
+                <a th:href="@{/web/admin/patients}" class="nav-link">
+                    <i class="fas fa-users mr-2"></i>Patients
+                </a>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center space-x-2">
+                        <img src="/api/placeholder/32/32" alt="Admin" class="w-8 h-8 rounded-full">
+                        <span>Admin</span>
+                        <i class="fas fa-chevron-down text-sm"></i>
+                    </button>
+
+                    <div x-show="open" @click.away="open = false"
+                         class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                        <a th:href="@{/web/admin/profile}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                            <i class="fas fa-user mr-2"></i>Profile
+                        </a>
+                        <a th:href="@{/web/admin/settings}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                            <i class="fas fa-cog mr-2"></i>Settings
+                        </a>
+                        <hr class="my-2">
+                        <a th:href="@{/logout}" class="block px-4 py-2 text-red-600 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.12.0/cdn.min.js"></script>
+</body>
+</html>

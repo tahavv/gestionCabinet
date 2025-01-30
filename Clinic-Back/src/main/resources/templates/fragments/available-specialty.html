@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Doctor Availability by Specialty</title>
+</head>
+<body>
+<h1>Availability for specialty: <span th:text="${specialty}"></span></h1>
+
+<p>Showing slots between:
+    <span th:text="${startDate}"></span> and <span th:text="${endDate}"></span>
+</p>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Doctor Name</th>
+        <th>Available Start</th>
+        <th>Available End</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="slot : ${availabilityList}">
+        <td th:text="${slot.doctorName}"></td>
+        <td th:text="${slot.availableStart}"></td>
+        <td th:text="${slot.availableEnd}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

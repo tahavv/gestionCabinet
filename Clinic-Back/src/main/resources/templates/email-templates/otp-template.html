@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(to right, #9333ea, #6366f1);
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+            color: #333;
+        }
+        .otp-code {
+            background-color: #f8f8f8;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 32px;
+            letter-spacing: 4px;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #eee;
+        }
+        .warning {
+            color: #666;
+            font-size: 12px;
+            background-color: #fff8dc;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>EventMaster Verification</h1>
+    </div>
+    <div class="content">
+        <p>Hello {{userName}},</p>
+
+        <p>Welcome to EventMaster! To complete your account verification, please use the following OTP code:</p>
+
+        <div class="otp-code">{{otpCode}}</div>
+
+        <p>This code will expire in 10 minutes for security purposes.</p>
+
+        <div class="warning">
+            <strong>⚠️ Security Notice:</strong> If you didn't request this verification, please ignore this email or contact our support team immediately.
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2025 EventMaster. All rights reserved.</p>
+        <p>This is an automated message, please do not reply to this email.</p>
+    </div>
+</div>
+</body>
+</html>

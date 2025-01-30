@@ -1,0 +1,72 @@
+<!-- users-list.component.html -->
+<div class="px-4 py-6">
+  <!-- Title & Search Row -->
+  <div class="flex items-center justify-between mb-4 fade-in">
+    <h2 class="text-2xl font-bold">Manage Users</h2>
+    <div>
+      <input
+        type="text"
+        placeholder="Search users..."
+        [(ngModel)]="searchText"
+        (input)="onSearch()"
+        class="p-2 border border-gray-300 rounded"
+      />
+      <button class="ml-2 btn btn-primary" (click)="exportToCSV()">Export CSV</button>
+      <button class="ml-2 btn btn-primary" (click)="onAddUser()">Add User</button>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 fade-in">
+    <div
+      *ngFor="let user of filteredUsers"
+      class="relative bg-white shadow hover:shadow-lg transition-shadow duration-300 rounded-lg overflow-hidden p-4 hover:scale-[1.01]"
+    >
+      <!-- Image (avatar) -->
+      <div class="flex justify-center mb-4">
+        <img
+          [src]="userImageUrl(user)"
+          alt="{{ user.name }}"
+          class="w-24 h-24 rounded-full object-cover"
+        />
+      </div>
+
+      <!-- Main Info -->
+      <div class="text-center space-y-1">
+        <h3 class="text-xl font-semibold">{{ user.name }}</h3>
+        <p class="text-gray-600">{{ user.email }}</p>
+        <p class="text-sm text-gray-500">Role: {{ user.role }}</p>
+      </div>
+
+      <!-- Lock, Verified, Organized Events -->
+      <div class="flex justify-center gap-2 mt-2">
+        <!-- Lock if accountLocked = true -->
+        <span *ngIf="user.accountLocked" class="text-red-500 text-sm flex items-center gap-1">
+      <i class="fas fa-lock"></i> Locked
+    </span>
+
+        <!-- Verified if verified = true -->
+        <span *ngIf="user.verified" class="text-green-500 text-sm flex items-center gap-1">
+      <i class="fas fa-check-circle"></i> Verified
+    </span>
+      </div>
+
+      <!-- Number of organized events (array length) -->
+<!--      <div class="text-center mt-2">-->
+<!--        <p class="text-sm text-gray-600">-->
+<!--          Organized Events: {{ user.organizedEvents.length || 0 }}-->
+<!--        </p>-->
+<!--      </div>-->
+
+      <!-- Buttons -->
+      <div class="flex justify-center gap-2 mt-4">
+        <button class="px-3 py-1 bg-blue-500 text-white rounded" (click)="onEditUser(user)">
+          Edit
+        </button>
+        <button class="px-3 py-1 bg-red-500 text-white rounded" (click)="onDelete(user.id)">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

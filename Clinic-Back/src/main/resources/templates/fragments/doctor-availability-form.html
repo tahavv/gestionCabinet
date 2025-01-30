@@ -1,0 +1,33 @@
+<!-- fragments/doctor-availability-form.html -->
+<div th:fragment="doctorAvailabilityForm" class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-4">Manage Doctor Availability</h2>
+    <form th:action="@{/web/admin/doctors/availability/recurring}" method="post">
+        <div class="mb-4">
+            <label class="block text-gray-700">Doctor</label>
+            <select name="doctorId" class="w-full p-2 border rounded-lg" required>
+                <option th:each="doctor : ${doctors}" th:value="${doctor.id}" th:text="${doctor.fullName}"></option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700">Day of Week</label>
+            <select name="dayOfWeek" class="w-full p-2 border rounded-lg" required>
+                <option value="MONDAY">Monday</option>
+                <option value="TUESDAY">Tuesday</option>
+                <option value="WEDNESDAY">Wednesday</option>
+                <option value="THURSDAY">Thursday</option>
+                <option value="FRIDAY">Friday</option>
+                <option value="SATURDAY">Saturday</option>
+                <option value="SUNDAY">Sunday</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700">Start Time</label>
+            <input type="time" name="startTime" class="w-full p-2 border rounded-lg" required>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700">End Time</label>
+            <input type="time" name="endTime" class="w-full p-2 border rounded-lg" required>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save Availability</button>
+    </form>
+</div>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Book Appointment</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        .slot-card {
+            transition: all 0.3s ease;
+        }
+
+        .slot-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.1);
+        }
+
+        .date-picker {
+            transition: all 0.3s ease;
+        }
+
+        .date-picker:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+<div th:insert="~{fragments/public-navbar :: publicNavbar}" class="mb-10"></div>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8 animate-slide-in">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-blue-800 mb-2"
+                    th:text="'Book Appointment with Dr. ' + ${doctor.fullName}">
+                </h2>
+                <div class="flex items-center text-gray-600">
+                    <i class="fas fa-stethoscope mr-2"></i>
+                    <span th:text="'Specialty: ' + ${doctor.specialty}"></span>
+                </div>
+            </div>
+            <a href="/web/welcome" class="bg-gray-100 text-gray-600 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Doctors
+            </a>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div th:if="${param.error != null}"
+         class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded animate-slide-in">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <p th:text="${param.error}">Error message</p>
+        </div>
+    </div>
+
+    <!-- Date Range Selector -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Select Date Range</h3>
+        <form th:action="@{|/web/booking/doctor/${doctor.id}|}" method="get"
+              class="flex flex-col md:flex-row items-center gap-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-600 mb-2">Start Date & Time</label>
+                <input type="datetime-local" name="start"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg date-picker"
+                       th:value="${#temporals.format(start, 'yyyy-MM-dd''T''HH:mm')}"/>
+            </div>
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-600 mb-2">End Date & Time</label>
+                <input type="datetime-local" name="end"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg date-picker"
+                       th:value="${#temporals.format(end, 'yyyy-MM-dd''T''HH:mm')}"/>
+            </div>
+            <button type="submit"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 mt-6 md:mt-0">
+                <i class="fas fa-sync-alt mr-2"></i>Update Slots
+            </button>
+        </form>
+    </div>
+
+    <!-- Available Slots -->
+    <div th:if="${!#lists.isEmpty(availableSlots)}"
+         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="slot : ${availableSlots}"
+             class="slot-card bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-clock text-blue-600 text-xl mr-3"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800" th:text="${#temporals.format(slot, 'EEEE, MMMM d')}">Date</p>
+                        <p class="text-gray-600" th:text="${#temporals.format(slot, 'h:mm a')}">Time</p>
+                    </div>
+                </div>
+                <form th:action="@{|/web/booking/doctor/${doctor.id}/book|}" method="post">
+                    <input type="hidden" name="slot" th:value="${slot}"/>
+                    <button type="submit"
+                            class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                        Book This Slot
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- No Slots Message -->
+    <div th:if="${#lists.isEmpty(availableSlots)}"
+         class="bg-white rounded-lg shadow-md p-8 text-center">
+        <i class="fas fa-calendar-times text-gray-400 text-4xl mb-4"></i>
+        <p class="text-xl text-gray-600">No available slots in this time range.</p>
+        <p class="text-gray-500 mt-2">Please try selecting different dates or times.</p>
+    </div>
+</div>
+</body>
+</html>

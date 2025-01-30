@@ -1,0 +1,39 @@
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Manage Doctor Availability</h1>
+
+    <!-- Recurring Schedule Form -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Add Recurring Schedule</h2>
+        <div th:replace="~{fragments/doctor-availability-form :: doctorAvailabilityForm}"></div>
+    </div>
+
+    <!-- Schedule Override Form -->
+    <div>
+        <h2 class="text-2xl font-bold mb-4">Add Schedule Override</h2>
+        <form th:action="@{/addmin/doctors/availability/override}" method="post" class="bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block text-gray-700">Doctor</label>
+                <select name="doctorId" class="w-full p-2 border rounded-lg" required>
+                    <option th:each="doctor : ${doctors}" th:value="${doctor.id}" th:text="${doctor.fullName}"></option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Date</label>
+                <input type="date" name="date" class="w-full p-2 border rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Start Time</label>
+                <input type="time" name="startTime" class="w-full p-2 border rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">End Time</label>
+                <input type="time" name="endTime" class="w-full p-2 border rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Available</label>
+                <input type="checkbox" name="isAvailable" class="p-2 border rounded-lg">
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save Override</button>
+        </form>
+    </div>
+</div>

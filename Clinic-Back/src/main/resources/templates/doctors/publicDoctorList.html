@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Public Doctor List</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet"/>
+</head>
+<body class="bg-gray-50">
+
+<div class="container mx-auto px-4 py-6">
+    <h2 class="text-3xl font-bold mb-6">Doctors List</h2>
+
+    <div th:if="${#lists.isEmpty(doctors)}" class="text-gray-700">
+        <p>No doctors found.</p>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(doctors)}" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div th:each="doc : ${doctors}" class="bg-white p-4 rounded shadow hover:shadow-md transition">
+            <h3 class="text-xl font-semibold text-blue-800" th:text="${doc.fullName}">Dr. Example</h3>
+            <p class="text-sm text-gray-600" th:text="'Specialty: ' + ${doc.specialty}">Spec...</p>
+            <p class="text-sm text-gray-600 mt-2" th:text="${doc.biography}">Bio info...</p>
+            <div class="mt-4">
+                <a th:href="@{|/web/booking/doctor/${doc.id}|}"
+                   class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Book Appointment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

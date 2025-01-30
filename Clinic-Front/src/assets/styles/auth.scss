@@ -1,0 +1,47 @@
+.auth-page {
+  min-height: 100vh;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+
+  // Animated background
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba($primary-blue, 0.1) 0%,
+        rgba($primary-purple, 0.1) 100%
+    );
+    z-index: -1;
+  }
+
+  // Animated circles in background
+  &::after {
+    content: '';
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba($primary-purple, 0.1) 0%,
+        rgba($primary-blue, 0.1) 100%
+    );
+    animation: float 20s infinite ease-in-out;
+    z-index: -1;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      transform: translate(-45%, -45%) scale(1.1);
+    }
+  }
+}

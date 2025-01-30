@@ -1,0 +1,151 @@
+<section id="booking" class="py-16 bg-gray-50">
+  <div class="container mx-auto px-6">
+    <h2 class="text-3xl font-bold text-center mb-6">Book Your Appointment</h2>
+    <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+      Find and book appointments with our expert doctors. Filter by specialty, check availability,
+      and schedule your visit in just a few clicks.
+    </p>
+
+    <!-- Search and Filter Panel -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Doctor Search -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Search Doctor
+          </label>
+          <div class="relative">
+            <input type="text"
+                   [formControl]="searchControl"
+                   placeholder="Search by doctor name..."
+                   class="w-full p-3 border rounded-lg pr-10 focus:ring-2 focus:ring-blue-500">
+            <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+          </div>
+        </div>
+
+        <!-- Specialty Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Specialty
+          </label>
+          <select [(ngModel)]="selectedSpecialty"
+                  (change)="filterBySpecialty()"
+                  class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="all">All Specialties</option>
+            <option *ngFor="let s of specialties" [value]="s">{{s}}</option>
+          </select>
+        </div>
+
+        <!-- Date Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Preferred Date
+          </label>
+          <input type="date"
+                 [(ngModel)]="selectedDate"
+                 (change)="filterByDate()"
+                 class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let item of filteredAvailability"
+           class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105
+                  transition-transform duration-300">
+        <div class="p-6">
+          <!-- Doctor Info -->
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
+              <!-- If you have an image in item.doctor or item.doctorName, adapt as needed -->
+              <img [src]="item.doctor?.imageUrl || 'assets/default-doctor.png'"
+                   [alt]="item.doctorName"
+                   class="w-full h-full object-cover">
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold">{{ item.doctorName }}</h3>
+              <p class="text-gray-600">{{ item.doctor?.specialty }}</p>
+            </div>
+          </div>
+
+          <!-- Quick Availability -->
+          <div class="mb-4">
+            <h4 class="font-semibold mb-2">Next Available Slots</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <button *ngFor="let slot of getNextAvailableSlots(item.slots, 4)"
+                      (click)="bookAppointment(item, slot.toISOString())"
+                      class="p-2 text-sm text-center bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition duration-200">
+                {{ slot | date:'short' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <button (click)="viewFullSchedule(item)"
+                    class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+              View Schedule
+            </button>
+            <button (click)="viewDoctorProfile(item)"
+                    class="py-2 px-4 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition duration-300">
+              <i class="fas fa-info-circle"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results Message -->
+    <div *ngIf="filteredAvailability.length === 0"
+         class="text-center py-8">
+      <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+      <p class="text-gray-600">No doctors found matching your criteria.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Schedule Modal -->
+<!-- Schedule Modal -->
+<div *ngIf="showScheduleModal"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+  <!-- Outer container of the modal -->
+  <div
+    class="bg-white rounded-lg w-full max-w-3xl mx-4 p-6
+           md:max-h-[80vh] overflow-y-auto">
+
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-semibold">
+        {{ selectedDoctor?.doctorName }}'s Schedule
+      </h3>
+      <button (click)="closeModal()"
+              class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body with the Calendar -->
+    <div class="mb-6">
+      <div class="grid grid-cols-7 gap-1">
+        <div *ngFor="let date of calendarDates"
+             class="p-2 text-center border rounded">
+          <div class="text-sm text-gray-600">{{ date | date:'EEE' }}</div>
+          <div class="font-semibold">{{ date | date:'d' }}</div>
+          <div class="mt-2">
+            <ng-container *ngIf="selectedDoctor && hasAvailabilityOnDate(selectedDoctor, date)">
+              <div *ngFor="let slot of getTimeSlots(selectedDoctor, date)"
+                   (click)="bookAppointment(selectedDoctor, slot.toISOString())"
+                   class="text-sm bg-blue-50 text-blue-600 rounded p-1 mb-1
+                          cursor-pointer hover:bg-blue-100">
+                {{ slot | date:'shortTime' }}
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

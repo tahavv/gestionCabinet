@@ -1,0 +1,86 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:host {
+  display: block;
+  margin: 0 auto;
+}
+
+.section-card {
+  @apply bg-gray-50 rounded-lg p-6 transition-all duration-300;
+
+  &:hover {
+    @apply transform scale-[1.01] shadow-md;
+
+    h3 {
+      @apply text-blue-600;
+    }
+  }
+}
+
+.info-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.table-container {
+  @apply overflow-hidden rounded-lg bg-white;
+
+  table {
+    @apply w-full;
+
+    th {
+      @apply px-4 py-3 text-left text-sm font-semibold text-gray-600 bg-gray-100;
+    }
+
+    td {
+      @apply px-4 py-3 text-sm text-gray-600 border-t border-gray-100;
+    }
+
+    tbody tr {
+      @apply transition-colors duration-200;
+
+      &:hover {
+        @apply bg-gray-50;
+      }
+    }
+  }
+}
+
+.badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.hover-pulse {
+  &:hover {
+    animation: pulse 2s infinite;
+  }
+}
+
+.loading-spinner {
+  @apply w-12 h-12 border-4 border-blue-200 rounded-full;
+  border-top-color: theme('colors.blue.500');
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media print {
+  .section-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

@@ -1,0 +1,59 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center p-4">
+  <div @fadeAnimation
+       class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">Verify OTP</h2>
+        <p class="text-gray-600 mt-2">Please enter the OTP sent to your email <strong>{{ email }}</strong></p>
+      </div>
+
+      <form [formGroup]="otpForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700">OTP Code</label>
+          <div class="relative">
+            <input type="text"
+                   formControlName="otp"
+                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                   [ngClass]="{'border-red-500': otpForm.get('otp')?.errors && otpForm.get('otp')?.touched}"
+                   placeholder="Enter OTP code">
+            <div *ngIf="otpForm.get('otp')?.errors?.['required'] && otpForm.get('otp')?.touched"
+                 @fadeAnimation
+                 class="absolute -bottom-5 left-0 text-red-500 text-xs">
+              OTP is required
+            </div>
+          </div>
+        </div>
+
+        <button type="submit"
+                [disabled]="otpForm.invalid || loading"
+                class="w-full py-3 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:ring-4 focus:ring-purple-200 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
+          <span *ngIf="!loading">Verify OTP</span>
+          <div *ngIf="loading" class="flex items-center justify-center">
+            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </button>
+
+        <div class="mt-4 text-center" *ngIf="!canResend">
+          <p class="text-gray-600">Resend code in <span class="font-medium">{{ countdown }}s</span></p>
+        </div>
+
+        <div class="mt-4 text-center" *ngIf="canResend">
+          <button type="button"
+                  (click)="onResend()"
+                  [disabled]="loading"
+                  class="text-purple-600 hover:text-purple-800 font-medium transition-colors">
+            Resend OTP
+          </button>
+        </div>
+      </form>
+
+      <p class="mt-8 text-center text-sm text-gray-600">
+        Back to
+        <a routerLink="/login"
+           class="text-purple-600 hover:text-purple-800 font-medium transition-colors">
+          Sign in
+        </a>
+      </p>
+    </div>
+  </div>
+</div>

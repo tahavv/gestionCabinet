@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Medical Record Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    <style>
+        .timeline-container {
+            position: relative;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #3B82F6;
+        }
+        .appointment-card {
+            transition: all 0.3s ease;
+        }
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8 slide-in">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-bold text-blue-800 mb-2"
+                    th:text="'Medical Record: ' + ${patient.fullName}">
+                </h2>
+                <p class="text-gray-600">
+                    Patient ID: <span th:text="${patient.id}"></span>
+                </p>
+            </div>
+            <a th:href="@{/web/admin/patients/list-cards}"
+               class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                Back to Patients
+            </a>
+        </div>
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-2">
+        <!-- Appointments Section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Appointments History
+            </h3>
+
+            <div class="timeline-container space-y-4" th:if="${appointments != null and !#lists.isEmpty(appointments)}">
+                <div class="timeline-line"></div>
+
+                <div th:each="ap : ${appointments}"
+                     class="appointment-card ml-8 p-4 bg-blue-50 rounded-lg border border-blue-100 relative">
+                    <div class="absolute -left-10 w-4 h-4 bg-blue-600 rounded-full mt-2"></div>
+
+                    <div th:if="${ap.status}"
+                         th:class="${'absolute top-4 right-4 px-3 py-1 rounded-full text-sm ' +
+                                  (ap.status == 'SCHEDULED' ? 'bg-yellow-100 text-yellow-800' :
+                                   ap.status == 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                                   'bg-red-100 text-red-800')}"
+                         th:text="${ap.status}">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-600">Start Time</p>
+                            <p class="font-semibold"
+                               th:text="${#temporals.format(ap.dateDebut, 'MMM dd, yyyy HH:mm')}">
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">End Time</p>
+                            <p class="font-semibold"
+                               th:text="${#temporals.format(ap.dateFin, 'MMM dd, yyyy HH:mm')}">
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-sm text-gray-600">Doctor</p>
+                        <p class="font-semibold" th:text="${ap.doctor.fullName}"></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-sm text-gray-600">Reason</p>
+                        <p class="font-semibold" th:text="${ap.reason}"></p>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-3 border-t border-blue-200">
+                        <div>
+                            <span class="text-sm text-gray-600">Cost: </span>
+                            <span class="font-semibold" th:text="${ap.cost}"></span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-sm mr-2">Payment Status:</span>
+                            <span th:if="${ap.paid}"
+                                  class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                                Paid
+                            </span>
+                            <span th:unless="${ap.paid}"
+                                  class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                                Unpaid
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${appointments == null or #lists.isEmpty(appointments)}"
+                 class="text-center py-8 text-gray-600">
+                <p>No appointments found.</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Medical Notes
+            </h3>
+
+            <div class="space-y-4"
+                 th:if="${record != null and !#lists.isEmpty(record.notes)}">
+                <div th:each="note : ${record.notes}"
+                     class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <p class="text-sm text-gray-600"
+                           th:text="${#temporals.format(note.createdAt, 'MMM dd, yyyy HH:mm')}"></p>
+                        <span class="text-xs text-gray-500"
+                              th:text="'Note ID: ' + ${note.id}"></span>
+                    </div>
+                    <p class="text-gray-800 whitespace-pre-line"
+                       th:text="${note.content}"></p>
+                </div>
+            </div>
+
+            <div th:if="${record == null or #lists.isEmpty(record.notes)}"
+                 class="text-center py-8 text-gray-600">
+                <p>No medical notes available.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

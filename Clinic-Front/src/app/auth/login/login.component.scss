@@ -1,0 +1,193 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  .login-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.5s ease-out;
+
+    h2 {
+      color: #1a202c;
+      font-size: 1.875rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      animation: fadeIn 0.5s ease-out 0.2s both;
+    }
+
+    p {
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeIn 0.5s ease-out 0.3s both;
+    }
+
+    form {
+      .form-group {
+        margin-bottom: 1.5rem;
+        animation: fadeIn 0.5s ease-out 0.4s both;
+
+        label {
+          display: block;
+          color: #4a5568;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+        }
+
+        input {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          background: white;
+          transition: all 0.3s ease;
+
+          &:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+          }
+
+          &.error {
+            border-color: #e53e3e;
+            animation: shake 0.5s ease-in-out;
+          }
+        }
+
+        .error-message {
+          color: #e53e3e;
+          font-size: 0.875rem;
+          margin-top: 0.5rem;
+          animation: fadeIn 0.3s ease-out;
+        }
+      }
+
+      .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        animation: fadeIn 0.5s ease-out 0.5s both;
+
+        .remember-me {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          input[type="checkbox"] {
+            border-radius: 4px;
+            width: 1rem;
+            height: 1rem;
+          }
+        }
+
+        a {
+          color: #667eea;
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.3s ease;
+
+          &:hover {
+            color: #5a67d8;
+          }
+        }
+      }
+
+      button {
+        width: 100%;
+        padding: 0.875rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-out 0.6s both;
+
+        &:hover {
+          background: #5a67d8;
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        &:disabled {
+          background: #a0aec0;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0;
+      animation: fadeIn 0.5s ease-out 0.7s both;
+
+      &::before,
+      &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+      }
+
+      span {
+        padding: 0 1rem;
+        color: #64748b;
+        font-size: 0.875rem;
+      }
+    }
+
+    .google-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0.75rem;
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease-out 0.8s both;
+
+      &:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+      }
+    }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #64748b;
+      animation: fadeIn 0.5s ease-out 0.9s both;
+
+      a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 0.25rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

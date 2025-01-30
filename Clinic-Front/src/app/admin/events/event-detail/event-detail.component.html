@@ -1,0 +1,124 @@
+<div class="max-w-4xl mx-auto p-4" *ngIf="!loading" @fadeIn>
+  <!-- Error State -->
+  <div *ngIf="error" class="bg-red-50 text-red-500 p-4 rounded-lg mb-4">
+    {{ error }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+  </div>
+
+  <!-- Event Content -->
+  <div *ngIf="eventData && !error" class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 relative overflow-hidden">
+      <div class="absolute inset-0 bg-white/10 transform -skew-y-6"></div>
+      <div class="relative flex items-center gap-4">
+        <div class="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+          <i class="fas fa-calendar text-3xl text-white"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-white">{{ eventData.name }}</h2>
+          <p class="text-blue-100 mt-1 flex items-center gap-2">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ eventData.location }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="p-6 space-y-6">
+      <!-- Event Details Card -->
+      <div class="section-card" @slideIn>
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-info-circle text-blue-500"></i>
+          <h3 class="text-lg font-semibold">Event Details</h3>
+        </div>
+        <div class="info-grid">
+          <div class="space-y-2">
+            <p class="text-gray-600">
+              <span class="font-medium">Category:</span> {{ eventData.category }}
+            </p>
+            <p class="text-gray-600">
+              <span class="font-medium">Start Date:</span> {{ eventData.dateDebut | date:'medium' }}
+            </p>
+            <p class="text-gray-600">
+              <span class="font-medium">End Date:</span> {{ eventData.dateFin | date:'medium' }}
+            </p>
+          </div>
+          <div class="space-y-2">
+            <p class="text-gray-600"><span class="font-medium">Description:</span></p>
+            <p class="text-gray-500">{{ eventData.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room Info Card -->
+      <div class="section-card" @slideIn>
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-door-open text-green-500"></i>
+          <h3 class="text-lg font-semibold">Room Information</h3>
+        </div>
+        <div class="info-grid" *ngIf="eventData.room">
+          <div class="p-4 bg-white rounded-lg shadow-sm">
+            <p class="text-gray-600">
+              <span class="font-medium">Room:</span> {{ eventData.room.name }}
+            </p>
+            <p class="text-gray-600">
+              <span class="font-medium">Capacity:</span> {{ eventData.room.capacity }}
+            </p>
+          </div>
+        </div>
+        <p *ngIf="!eventData.room" class="text-gray-500">No room assigned</p>
+      </div>
+
+      <!-- Participants Card -->
+      <div class="section-card" @slideIn>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-users text-purple-500"></i>
+            <h3 class="text-lg font-semibold">Participants</h3>
+          </div>
+          <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">
+            {{ eventData.participants?.length || 0 }} Attendees
+          </span>
+        </div>
+        <div class="table-container">
+          <table class="w-full">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let participant of eventData.participants">
+              <td>{{ participant.name }}</td>
+              <td>{{ participant.email }}</td>
+              <td>
+                  <span [class]="'badge ' + getRoleBadgeClass(participant.role)">
+                    {{ participant.role }}
+                  </span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Chart Card (NEW) -->
+      <div class="section-card" @slideIn *ngIf="!loading">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-chart-pie text-pink-500"></i>
+          <h3 class="text-lg font-semibold">Participants Chart</h3>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-4">
+          <canvas #chartCanvas style="width: 100%;height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

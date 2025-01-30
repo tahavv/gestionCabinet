@@ -1,0 +1,75 @@
+// event-form.component.scss
+:host {
+  display: block;
+}
+
+.form-group {
+  @apply space-y-1;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.form-input {
+  @apply w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg
+  focus:ring-2 focus:ring-blue-100 focus:border-blue-400
+  transition-all duration-200;
+
+  &.error {
+    @apply border-red-300 focus:ring-red-100 focus:border-red-400;
+  }
+}
+
+.error-message {
+  @apply text-sm text-red-500 mt-1;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Material Autocomplete Customization
+::ng-deep {
+  .mat-form-field-appearance-outline {
+    .mat-form-field-outline {
+      @apply rounded-lg;
+    }
+
+    .mat-form-field-infix {
+      @apply border-0 pt-0.5 pb-0.5;
+    }
+
+    .mat-form-field-wrapper {
+      @apply m-0 p-0;
+    }
+
+    input.mat-input-element {
+      @apply py-2;
+    }
+  }
+
+  .mat-autocomplete-panel {
+    @apply rounded-lg shadow-lg border border-gray-100 mt-1;
+
+    .mat-option {
+      @apply text-sm py-2.5;
+
+      &:hover {
+        @apply bg-gray-50;
+      }
+
+      &.mat-selected {
+        @apply bg-blue-50 text-blue-700;
+      }
+    }
+  }
+}
