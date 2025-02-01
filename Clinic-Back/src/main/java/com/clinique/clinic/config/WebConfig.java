@@ -1,8 +1,12 @@
 package com.clinique.clinic.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -11,12 +15,14 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // Apply to all endpoints
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200") // or "*" to allow all
+                .allowedOrigins("http://localhost:4200")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .exposedHeaders("Authorization") // if you need to expose headers
-                .allowCredentials(true);         // if you use cookies/auth headers
+                .exposedHeaders("Authorization")
+                .allowCredentials(true);
     }
+
+
 }
 
 

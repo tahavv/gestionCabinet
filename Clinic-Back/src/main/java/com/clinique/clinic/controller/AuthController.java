@@ -48,7 +48,7 @@ public class AuthController {
             return new AuthResponseDTO("Email is already in use", null,null);
         }
 
-        Doctor user = new Doctor();
+        Patient user = new Patient();
         user.setFullName(signupRequest.getName());
         user.setEmail(signupRequest.getEmail());
         //user.setPhoneNumber(signupRequest.getPhoneNumber());

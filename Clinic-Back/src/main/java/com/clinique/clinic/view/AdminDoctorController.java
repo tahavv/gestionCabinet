@@ -17,11 +17,48 @@ public class AdminDoctorController {
     private DoctorService doctorService;
 
     @GetMapping("/list")
-    public String listDoctors(Model model) {
-        List<Doctor> doctors = doctorService.getDoctorList(); // or .findAll()
+    public String listDoctors(
+            @RequestParam(name="searchTerm", required=false) String searchTerm,
+            Model model
+    ) {
+        List<Doctor> doctors;
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            doctors = doctorService.searchByNameOrSpecialty(searchTerm.trim());
+        } else {
+            doctors = doctorService.getDoctorList();
+        }
+        model.addAttribute("searchTerm", searchTerm);
         model.addAttribute("doctors", doctors);
         model.addAttribute("content", "doctors/doctorList");
         return "admin/dashboard";
+    }
+
+    @GetMapping("/new")
+    public String newDoctor(Model model) {
+        model.addAttribute("doctor", new Doctor());
+        model.addAttribute("content", "doctors/newDoctorForm");
+        return "admin/dashboard";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editDoctor(@PathVariable("id") Long id, Model model) {
+        Doctor doctor = doctorService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        model.addAttribute("doctor", doctor);
+        model.addAttribute("content", "doctors/newDoctorForm");
+        return "admin/dashboard";
+    }
+
+    @PostMapping("/save")
+    public String saveDoctor(@ModelAttribute Doctor doctor) {
+        doctorService.saveWithDefaultSchedule(doctor);
+        return "redirect:/web/admin/doctors/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteDoctor(@PathVariable("id") Long id) {
+        doctorService.delete(id);
+        return "redirect:/web/admin/doctors/list";
     }
 
     @GetMapping("/schedule")
@@ -35,18 +72,5 @@ public class AdminDoctorController {
         model.addAttribute("doctors", doctorService.getDoctorList());
         model.addAttribute("content", "doctors/availability");
         return "admin/dashboard";
-    }
-
-    @GetMapping("/new")
-    public String newDoctor(Model model) {
-        model.addAttribute("doctor", new Doctor());
-        model.addAttribute("content", "doctors/newDoctorForm");
-        return "admin/dashboard";
-    }
-
-    @PostMapping("/save")
-    public String saveDoctor(@ModelAttribute Doctor doctor) {
-        doctorService.save(doctor);
-        return "redirect:/web/admin/doctors/list";
     }
 }

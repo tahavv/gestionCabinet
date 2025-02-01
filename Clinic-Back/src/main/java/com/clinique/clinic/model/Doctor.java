@@ -1,12 +1,13 @@
 package com.clinique.clinic.model;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +17,8 @@ import lombok.Setter;
 @DiscriminatorValue("DOCTOR")
 public class Doctor extends User {
     private String specialty;
-    private String biography; // Additional information about the doctor
-    private Double rating; // Average rating from patient reviews
+    private String biography;
+    private Double rating;
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments = new ArrayList<>();
 }

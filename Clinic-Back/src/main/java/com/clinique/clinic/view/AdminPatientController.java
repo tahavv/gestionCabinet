@@ -87,6 +87,14 @@ public class AdminPatientController {
         patient.setVerified(true);
         patient.setRole(Role.PATIENT);
         Patient savedPatient = patientService.save(patient);
+        if(isNew){
+            try {
+                emailService.sendWelcomeEmail(patient.getEmail(),patient.getFullName(),password);
+                System.out.println("Sending Email === >" + patient.getEmail() + " to " + patient.getFullName());
+            }catch (Exception e){
+                System.out.println("Error sending welcome email :"+e.getMessage());
+            }
+        }
         if (isNew && initialNote != null && !initialNote.trim().isEmpty()) {
             MedicalRecord record = new MedicalRecord();
             record.setPatient(savedPatient);
@@ -95,15 +103,9 @@ public class AdminPatientController {
             note.setContent(initialNote);
             note.setMedicalRecord(record);
             record.getNotes().add(note);
-
             medicalRecordService.save(record);
-            try {
-                emailService.sendWelcomeEmail(patient.getEmail(),patient.getFullName(),password);
-            }catch (Exception e){
-                System.out.println("Error sending welcome email :"+e.getMessage());
-            }
         }
-        return "redirect:/web/admin/patients/list";
+        return "redirect:/web/admin/patients/list-cards";
     }
 
     @GetMapping("/delete/{id}")

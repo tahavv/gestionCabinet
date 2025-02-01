@@ -1,10 +1,242 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
-<h2>Analytics</h2>
-<p>Chart data or visualizations go here.</p>
-<!-- Example usage:
-<div id="chart" th:text="${chartData}"></div>
--->
+<head>
+    <meta charset="UTF-8">
+    <title>Comprehensive Analytics Dashboard</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100"
+      x-data="{
+        activeChart: 'appointments',
+        currentPeriod: 'This Month',
+        periods: ['This Month', 'Last Month', 'This Quarter', 'This Year']
+      }">
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 bg-white rounded-2xl shadow-xl p-6 transform transition hover:scale-[1.02]">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-blue-800">Analytics Dashboard</h2>
+                <div class="flex items-center space-x-2">
+                    <select
+                            x-model="currentPeriod"
+                            class="border-2 border-blue-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                        <template x-for="period in periods" :key="period">
+                            <option x-text="period" :value="period"></option>
+                        </template>
+                    </select>
+                    <div class="space-x-2">
+                        <button
+                                @click="activeChart = 'appointments'"
+                                :class="activeChart === 'appointments' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700'"
+                                class="px-4 py-2 rounded-lg transition">
+                            Appointments
+                        </button>
+                        <button
+                                @click="activeChart = 'patients'"
+                                :class="activeChart === 'patients' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700'"
+                                class="px-4 py-2 rounded-lg transition">
+                            Patients
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <canvas id="mainChart" height="300"></canvas>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-6 transform transition hover:scale-[1.02]">
+            <h3 class="text-2xl font-bold text-blue-800 mb-4">Key Performance Metrics</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <span class="text-gray-600">Total Appointments</span>
+                    <span class="font-bold text-blue-700" th:text="${totalAppointments}">0</span>
+                </div>
+                <div class="flex justify-between items-center border-b pb-2">
+                    <span class="text-gray-600">Completed Appointments</span>
+                    <span class="font-bold text-blue-700" th:text="${completedAppointments}">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Average Wait Time</span>
+                    <span class="font-bold text-blue-700" th:text="${averageWaitTime + ' mins'}">0 mins</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div class="bg-white rounded-2xl shadow-xl p-4 transform transition hover:scale-[1.02]">
+            <h4 class="text-xl font-semibold text-blue-800 mb-3">Appointments by Specialty</h4>
+            <canvas id="specialtyChart" height="250"></canvas>
+        </div>
+        <div class="bg-white rounded-2xl shadow-xl p-4 transform transition hover:scale-[1.02]">
+            <h4 class="text-xl font-semibold text-blue-800 mb-3">Patient Demographics</h4>
+            <canvas id="demographicChart" height="250"></canvas>
+        </div>
+        <div class="bg-white rounded-2xl shadow-xl p-4 transform transition hover:scale-[1.02]">
+            <h4 class="text-xl font-semibold text-blue-800 mb-3">Monthly Trends</h4>
+            <canvas id="monthlyTrendChart" height="250"></canvas>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', () => {
+        const mainCtx = document.getElementById('mainChart').getContext('2d');
+        const specialtyCtx = document.getElementById('specialtyChart').getContext('2d');
+        const demographicCtx = document.getElementById('demographicChart').getContext('2d');
+        const monthlyTrendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        const mainChart = new Chart(mainCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [
+                    {
+                        label: 'Appointments',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Patients',
+                        data: [2, 3, 20, 5, 1, 4],
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        titleColor: 'white',
+                        bodyColor: 'white'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(specialtyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Cardiology', 'Neurology', 'Pediatrics', 'Oncology'],
+                datasets: [{
+                    data: [30, 20, 25, 15],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(239, 68, 68, 0.7)'
+                    ],
+                    borderWidth: 1,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 20,
+                            padding: 10
+                        }
+                    }
+                }
+            }
+        });
+        new Chart(demographicCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-20', '21-40', '41-60', '60+'],
+                datasets: [{
+                    label: 'Patient Age Groups',
+                    data: [15, 45, 25, 15],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.6)',
+                        'rgba(16, 185, 129, 0.6)',
+                        'rgba(245, 158, 11, 0.6)',
+                        'rgba(239, 68, 68, 0.6)'
+                    ],
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.formattedValue} patients`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        new Chart(monthlyTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [
+                    {
+                        label: 'New Patients',
+                        data: [10, 15, 8, 12, 20, 18],
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Repeat Patients',
+                        data: [5, 7, 6, 9, 11, 10],
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        titleColor: 'white',
+                        bodyColor: 'white'
+                    }
+                }
+            }
+        });
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

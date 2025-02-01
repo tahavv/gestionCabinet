@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
 <head>
     <title>Public Navbar Fragment</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -9,11 +11,13 @@
     <nav class="fixed top-0 w-full bg-white shadow-md z-50">
         <div class="container mx-auto px-6">
             <div class="flex justify-between items-center h-16">
+                <!-- Left: Logo -->
                 <div class="flex items-center">
                     <img src="/images/logo.png" alt="Clinic Logo" class="h-8 w-auto mr-2">
                     <span class="text-xl font-bold text-blue-600">ClinicPro</span>
                 </div>
 
+                <!-- Middle: Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#home" class="text-gray-600 hover:text-blue-600 transition duration-200">Home</a>
                     <a href="#about" class="text-gray-600 hover:text-blue-600 transition duration-200">About</a>
@@ -21,33 +25,63 @@
                     <a href="#find-doctor" class="text-gray-600 hover:text-blue-600 transition duration-200">Doctors</a>
                     <a href="#contact" class="text-gray-600 hover:text-blue-600 transition duration-200">Contact</a>
                 </div>
+
+                <!-- Right side -->
                 <div class="flex items-center space-x-4">
-                    <!--
-                      Instead of (click)="...", just make these anchors or
-                      a small script call for modals if you have them server-side
-                    -->
-                    <a href="/web/auth/login"
-                       class="px-4 py-2 text-blue-600 hover:text-blue-700 transition duration-200">
-                        Login
-                    </a>
-                    <a href="/web/auth/signup"
-                       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700
-                    transition duration-200 transform hover:scale-105">
-                        Sign Up
-                    </a>
+                    <!-- Show if NOT authenticated -->
+                    <div sec:authorize="!isAuthenticated()">
+                        <a href="/web/auth/login"
+                           class="px-4 py-2 text-blue-600 hover:text-blue-700 transition duration-200">
+                            Login
+                        </a>
+                        <a href="/web/auth/signup"
+                           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700
+                                  transition duration-200 transform hover:scale-105">
+                            Sign Up
+                        </a>
+                    </div>
+
+                    <!-- Show if authenticated (Logout) -->
+                    <div sec:authorize="isAuthenticated()">
+                        <form th:action="@{/web/auth/logout}" method="post" class="inline">
+                            <!-- If CSRF is active, consider adding a hidden _csrf token, or Spring will do it automatically if enabled -->
+                            <button type="submit"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition
+                                           duration-200 transform hover:scale-105">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
                 </div>
+
+                <!-- Mobile hamburger -->
                 <button class="md:hidden" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars text-gray-600"></i>
                 </button>
             </div>
         </div>
+
+        <!-- Mobile Menu -->
         <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
             <div class="px-4 pt-2 pb-3 space-y-1">
                 <a href="#home" class="block px-3 py-2 text-gray-600">Home</a>
                 <a href="#about" class="block px-3 py-2 text-gray-600">About</a>
                 <a href="#services" class="block px-3 py-2 text-gray-600">Services</a>
-                <a href="#doctors" class="block px-3 py-2 text-gray-600">Doctors</a>
+                <a href="#find-doctor" class="block px-3 py-2 text-gray-600">Doctors</a>
                 <a href="#contact" class="block px-3 py-2 text-gray-600">Contact</a>
+
+                <!-- If not authenticated => show mobile login/signup -->
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/web/auth/login" class="block px-3 py-2 text-gray-600">Login</a>
+                    <a href="/web/auth/signup" class="block px-3 py-2 text-gray-600">Sign Up</a>
+                </div>
+
+                <!-- If authenticated => show mobile logout -->
+                <div sec:authorize="isAuthenticated()">
+                    <form th:action="@{/web/auth/logout}" method="post">
+                        <button class="block px-3 py-2 text-red-600">Logout</button>
+                    </form>
+                </div>
             </div>
         </div>
     </nav>

@@ -1,25 +1,166 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
-<h2>Add New Doctor</h2>
-<form th:action="@{/web/admin/doctors/save}" th:object="${doctor}" method="post">
-    <label>Full Name:</label>
-    <input type="text" th:field="*{fullName}" required/><br/>
+<head>
+    <meta charset="UTF-8" />
+    <title>Add/Edit Doctor</title>
 
-    <label>Email:</label>
-    <input type="email" th:field="*{email}" required/><br/>
+    <!-- TailwindCSS -->
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet"/>
 
-    <label>Phone Number:</label>
-    <input type="text" th:field="*{phoneNumber}" /><br/>
+    <!-- AlpineJS for interactivity -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-50">
+<div class="container mx-auto px-4 py-8"
+     x-data="{
+            generatedPassword: '',
+            passwordVisible: false,
+            passwordStrength: {},
+            generatePassword() {
+                const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+                let newPass = '';
+                for (let i = 0; i < 16; i++) {
+                    newPass += charset.charAt(Math.floor(Math.random() * charset.length));
+                }
+                this.generatedPassword = newPass;
+                this.passwordStrength = this.checkPasswordStrength(newPass);
+                document.getElementById('doctorPassword').value = newPass;
+            },
+            checkPasswordStrength(password) {
+                const hasUppercase = /[A-Z]/.test(password);
+                const hasLowercase = /[a-z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+                const hasSpecial = /[!@#$%^&*]/.test(password);
+                const isLongEnough = password.length >= 12;
 
-    <label>Specialty:</label>
-    <input type="text" th:field="*{specialty}" /><br/>
+                return {
+                    uppercase: hasUppercase,
+                    lowercase: hasLowercase,
+                    number: hasNumber,
+                    special: hasSpecial,
+                    length: isLongEnough
+                };
+            }
+         }">
 
-    <label>Biography:</label>
-    <textarea th:field="*{biography}"></textarea><br/>
+    <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8">
+        <h2 class="text-3xl font-bold mb-6 text-blue-800 text-center"
+            th:text="${doctor.id == null} ? 'Add New Doctor' : 'Edit Doctor'">
+            Add/Edit Doctor
+        </h2>
 
-    <!-- etc. -->
-    <button type="submit">Save</button>
-</form>
+        <form th:action="@{/web/admin/doctors/save}"
+              th:object="${doctor}"
+              method="post"
+              class="space-y-4">
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-blue-700 font-semibold mb-2">Full Name</label>
+                    <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           type="text" th:field="*{fullName}" placeholder="Enter Full Name" required/>
+                </div>
+
+                <div>
+                    <label class="block text-blue-700 font-semibold mb-2">Email</label>
+                    <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           type="email" th:field="*{email}" placeholder="Enter Email" required/>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-blue-700 font-semibold mb-2">Phone Number</label>
+                    <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           type="tel" th:field="*{phoneNumber}" placeholder="Enter Phone"/>
+                </div>
+
+                <div>
+                    <label class="block text-blue-700 font-semibold mb-2">Specialty</label>
+                    <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           type="text" th:field="*{specialty}" placeholder="e.g. Cardiology" required/>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-blue-700 font-semibold mb-2">Biography</label>
+                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          th:field="*{biography}" placeholder="Enter doctor's biography" rows="4"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-blue-700 font-semibold mb-2">Rating</label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       type="number" step="0.1" min="0" max="5"
+                       th:field="*{rating}" placeholder="Optional rating (0-5)"/>
+            </div>
+
+            <div>
+                <label class="block text-blue-700 font-semibold mb-2">Password</label>
+                <div class="flex items-center space-x-2">
+                    <div class="relative w-full">
+                        <input id="doctorPassword"
+                               :type="passwordVisible ? 'text' : 'password'"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               th:field="*{password}"
+                               placeholder="Enter password or leave blank if editing"
+                               x-model="generatedPassword"
+                               x-on:input="generatedPassword = $event.target.value; passwordStrength = checkPasswordStrength($event.target.value)"/>
+                        <button type="button"
+                                @click="passwordVisible = !passwordVisible"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            <svg x-show="!passwordVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            </svg>
+                            <svg x-show="passwordVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.78zm4.261 4.262l1.514 1.514a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <button type="button"
+                            @click="generatePassword()"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">
+                        Generate
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium">Password Strength:</span>
+                        <div class="flex space-x-1">
+                                <span class="w-2 h-2 rounded-full"
+                                      :class="passwordStrength.length ? 'bg-green-500' : 'bg-gray-300'"></span>
+                            <span class="w-2 h-2 rounded-full"
+                                  :class="passwordStrength.uppercase ? 'bg-green-500' : 'bg-gray-300'"></span>
+                            <span class="w-2 h-2 rounded-full"
+                                  :class="passwordStrength.lowercase ? 'bg-green-500' : 'bg-gray-300'"></span>
+                            <span class="w-2 h-2 rounded-full"
+                                  :class="passwordStrength.number ? 'bg-green-500' : 'bg-gray-300'"></span>
+                            <span class="w-2 h-2 rounded-full"
+                                  :class="passwordStrength.special ? 'bg-green-500' : 'bg-gray-300'"></span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Requirements: 12+ chars, uppercase, lowercase, number, special char
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mt-6">
+                <button type="submit"
+                        class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">
+                        <span th:text="${doctor.id == null} ? 'Add Doctor' : 'Update Doctor'">
+                            Add / Update
+                        </span>
+                </button>
+                <a th:href="@{/web/admin/doctors/list}"
+                   class="text-blue-700 hover:underline transition duration-300 ease-in-out">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

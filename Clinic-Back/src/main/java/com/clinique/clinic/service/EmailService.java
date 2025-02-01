@@ -32,7 +32,7 @@ public class EmailService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setTo(to);
-        helper.setSubject("Your OTP Code - EventMaster");
+        helper.setSubject("Your OTP Code - ClinicPro");
         helper.setText(processedHtml, true);
         mailSender.send(mimeMessage);
     }
@@ -47,13 +47,14 @@ public class EmailService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setTo(to);
-        helper.setSubject("Reset Your Password - EventMaster");
+        helper.setSubject("Reset Your Password - ClinicPro");
         helper.setText(processedHtml, true);
 
         mailSender.send(mimeMessage);
     }
 
     public void sendWelcomeEmail(String to, String userName,String password) throws IOException, MessagingException {
+        System.out.println("Sending Email === >" + to + " to " + userName);
         String template = loadTemplate("welcome.html");
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("{{userName}}", userName);
@@ -64,7 +65,7 @@ public class EmailService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setTo(to);
-        helper.setSubject("Welcome to our platform - EventMaster");
+        helper.setSubject("Welcome to our platform - ClinicPro");
         helper.setText(processedHtml, true);
 
         mailSender.send(mimeMessage);

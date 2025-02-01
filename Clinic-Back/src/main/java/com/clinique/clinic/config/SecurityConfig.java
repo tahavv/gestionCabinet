@@ -61,7 +61,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/web/auth/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/web/auth/dashboard", true) // after login
+                        .defaultSuccessUrl("/web/auth/dashboard", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -69,7 +69,6 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/web/auth/login?logout")
                         .permitAll()
                 )
-                // If you want sessions to be created only when needed, or always, or stateless
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )

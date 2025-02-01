@@ -46,6 +46,14 @@ public class AuthWebController {
     @Autowired
     private EmailService emailService;
 
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate();
+        return "redirect:/web/auth/login?logout";
+    }
+
+
     @GetMapping("/signup")
     public String showSignupForm(Model model) {
         model.addAttribute("signupForm", new SignupRequestDTO());
@@ -64,7 +72,7 @@ public class AuthWebController {
             return "user/signup";
         }
 
-        Doctor user = new Doctor();
+        Patient user = new Patient();
         user.setFullName(signupRequest.getName());
         user.setEmail(signupRequest.getEmail());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
@@ -123,7 +131,6 @@ public class AuthWebController {
         HttpSession session = request.getSession(true);
         session.setAttribute("loggedUser", user);
 
-        System.out.println("User role after login: " + user.getRole());
 
         if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.DOCTOR) || user.getRole().equals(Role.STAFF)) {
             return "redirect:/web/admin/dashboard";
@@ -175,4 +182,91 @@ public class AuthWebController {
         model.addAttribute("infoMessage", "Account verified successfully. Please log in.");
         return "redirect:/web/auth/login";
     }
+
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm(Model model) {
+        model.addAttribute("email", "");
+        return "user/forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String processForgotPassword(
+            @RequestParam("email") String email,
+            Model model
+    ) throws MessagingException, IOException {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            model.addAttribute("errorMessage", "User not found with email: " + email);
+            return "user/forgot-password";
+        }
+
+        User user = userOptional.get();
+        String token = UUID.randomUUID().toString();
+
+        ResetToken resetToken = new ResetToken();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setExpiryDate(LocalDateTime.now().plusHours(1));
+        resetTokenRepository.save(resetToken);
+        String resetLink = "http://localhost:8083/web/auth/reset-password?token=" + token;
+        emailService.sendResetPasswordEmailHtml(user.getEmail(), user.getFullName(), resetLink);
+
+        model.addAttribute("infoMessage", "A reset link has been sent to your email.");
+        return "user/forgot-password";
+    }
+
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(
+            @RequestParam("token") String token,
+            Model model
+    ) {
+        Optional<ResetToken> optionalResetToken = resetTokenRepository.findByToken(token);
+        if (optionalResetToken.isEmpty()) {
+            model.addAttribute("errorMessage", "Invalid or expired reset token.");
+            return "user/reset-password";
+        }
+
+        ResetToken resetToken = optionalResetToken.get();
+        if (resetToken.isUsed() || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            model.addAttribute("errorMessage", "Token expired or already used.");
+            return "user/reset-password";
+        }
+        //model.addAttribute("token", token);
+        ResetPasswordRequest resetForm = new ResetPasswordRequest();
+        resetForm.setToken(token);
+        model.addAttribute("resetForm", resetForm);
+        return "user/reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String processResetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("newPassword") String newPassword,
+            Model model
+    ) {
+        Optional<ResetToken> optionalResetToken = resetTokenRepository.findByToken(token);
+        if (optionalResetToken.isEmpty()) {
+            model.addAttribute("errorMessage", "Invalid or expired token.");
+            return "user/reset-password";
+        }
+        ResetToken resetToken = optionalResetToken.get();
+        if (resetToken.isUsed() || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            model.addAttribute("errorMessage", "Token expired or already used.");
+            return "user/reset-password";
+        }
+        User user = resetToken.getUser();
+        if (user == null) {
+            model.addAttribute("errorMessage", "No user associated with this token.");
+            return "user/reset-password";
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        resetToken.setUsed(true);
+        resetTokenRepository.save(resetToken);
+
+        model.addAttribute("infoMessage", "Password reset successful. You can now log in.");
+        return "redirect:/web/auth/login";
+    }
+
 }

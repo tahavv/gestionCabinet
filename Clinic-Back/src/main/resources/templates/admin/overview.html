@@ -1,8 +1,235 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
-<h2>Dashboard Overview</h2>
-<p>Some statistic: <span th:text="${someStat}">42</span></p>
-<!-- Add more dashboard summary content here -->
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100"
+      x-data="{
+        activeTab: 'appointment',
+        currentTime: new Date().toLocaleTimeString(),
+        updateTime() {
+            setInterval(() => {
+                this.currentTime = new Date().toLocaleTimeString();
+            }, 1000)
+        }
+      }"
+      x-init="updateTime()">
+
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-4xl font-extrabold text-blue-900">Admin Dashboard</h1>
+        <div class="text-xl text-blue-700 font-semibold" x-text="currentTime"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 bg-white rounded-2xl shadow-xl p-6 transition hover:scale-[1.02]">
+            <h2 class="text-3xl font-bold text-blue-800 mb-6">Quick Analytics</h2>
+            <canvas id="miniChart" class="w-full" height="200"></canvas>
+        </div>
+        <div class="bg-white rounded-2xl shadow-xl p-6 transition hover:scale-[1.02]">
+            <h3 class="text-2xl font-bold text-blue-800 mb-4">Today’s Stats</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Total Appts Today</span>
+                    <span class="font-bold text-blue-700" th:text="${totalToday}">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Next Appt</span>
+                    <span class="font-bold text-blue-700">
+                        <span th:if="${nextAppointment != null}">
+                            <span th:if="${#temporals.format(nextAppointment.dateDebut, 'yyyy-MM-dd')
+                                         == #temporals.format(today, 'yyyy-MM-dd')}"
+                                  th:text="${#temporals.format(nextAppointment.dateDebut,'HH:mm')}">
+                                N/A
+                            </span>
+                            <span th:if="${#temporals.format(nextAppointment.dateDebut, 'yyyy-MM-dd')
+                                         != #temporals.format(today, 'yyyy-MM-dd')}"
+                                  th:text="${#temporals.format(nextAppointment.dateDebut,'yyyy-MM-dd HH:mm')}">
+                                2025-02-05 09:30
+                            </span>
+                        </span>
+                        <span th:if="${nextAppointment == null}">N/A</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 gap-6 mt-6">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">Today's Appointments</h2>
+            <div th:if="${#lists.isEmpty(todaysAppointments)}" class="text-gray-600">
+                No appointments scheduled for today.
+            </div>
+            <div th:if="${!#lists.isEmpty(todaysAppointments)}" class="overflow-x-auto">
+                <table class="min-w-full border">
+                    <thead class="bg-blue-50 text-blue-800">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-semibold">Time</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold">Patient</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold">Status</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold">Reason</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                    <tr th:each="appt : ${todaysAppointments}" class="hover:bg-blue-50">
+                        <td class="px-4 py-2"
+                            th:text="${#temporals.format(appt.dateDebut,'HH:mm')}">
+                            09:00
+                        </td>
+                        <td class="px-4 py-2"
+                            th:text="${appt.patient.fullName}">
+                            John Doe
+                        </td>
+                        <td class="px-4 py-2" th:text="${appt.status}">SCHEDULED</td>
+                        <td class="px-4 py-2" th:text="${appt.reason}">General Check-up</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 gap-6 mt-6">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex border-b mb-4 pb-2">
+                <button
+                        @click="activeTab = 'appointment'"
+                        :class="activeTab === 'appointment'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-blue-100 text-blue-700'"
+                        class="px-4 py-2 rounded-lg transition mr-2">
+                    Current/Next Appointment
+                </button>
+                <button
+                        @click="activeTab = 'notes'"
+                        :class="activeTab === 'notes'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-blue-100 text-blue-700'"
+                        class="px-4 py-2 rounded-lg transition">
+                    Appointment Notes
+                </button>
+            </div>
+            <div x-show="activeTab === 'appointment'" class="space-y-4">
+                <div th:if="${currentAppointment != null}" class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold text-blue-800 mb-3">Appointment Details</h3>
+                        <div class="space-y-2">
+                            <p><strong>ID:</strong> <span th:text="${currentAppointment.id}"></span></p>
+                            <p><strong>Status:</strong> <span th:text="${currentAppointment.status}" class="badge"></span></p>
+                            <p><strong>Reason:</strong> <span th:text="${currentAppointment.reason}"></span></p>
+                            <p>
+                                <strong>Time:</strong>
+                                <span th:text="${#temporals.format(currentAppointment.dateDebut,'HH:mm')}"></span>
+                                -
+                                <span th:text="${#temporals.format(currentAppointment.dateFin,'HH:mm')}"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold text-blue-800 mb-3">Patient Info</h3>
+                        <div th:if="${patient != null}" class="space-y-2">
+                            <p><strong>Name:</strong> <span th:text="${patient.fullName}"></span></p>
+                            <p><strong>Email:</strong> <span th:text="${patient.email}"></span></p>
+                            <p><strong>Phone:</strong> <span th:text="${patient.phoneNumber}"></span></p>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 flex space-x-4">
+                        <form th:action="@{/web/admin/overview/change-status}" method="post" class="flex-grow">
+                            <input type="hidden" name="appointmentId" th:value="${currentAppointment.id}"/>
+                            <div class="flex items-center space-x-2">
+                                <select name="newStatus"
+                                        class="flex-grow border-2 border-blue-200 p-2 rounded-lg
+                                               focus:ring-2 focus:ring-blue-500">
+                                    <option value="SCHEDULED" th:selected="${currentAppointment.status == 'SCHEDULED'}">SCHEDULED</option>
+                                    <option value="COMPLETED" th:selected="${currentAppointment.status == 'COMPLETED'}">COMPLETED</option>
+                                    <option value="CANCELLED" th:selected="${currentAppointment.status == 'CANCELLED'}">CANCELLED</option>
+                                </select>
+                                <button type="submit"
+                                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                    Update Status
+                                </button>
+                            </div>
+                        </form>
+                        <!-- Next / etc. -->
+                        <form th:action="@{/web/admin/overview/next-patient}" method="post">
+                            <button type="submit"
+                                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                                Next Patient
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${currentAppointment == null}"
+                     class="text-gray-700 text-center p-6 bg-blue-50 rounded-lg">
+                    <p>No current/next appointment for you right now!</p>
+                </div>
+            </div>
+            <div x-show="activeTab === 'notes'" class="space-y-4">
+                <div th:if="${notes != null and !#lists.isEmpty(notes)}">
+                    <div th:each="note : ${notes}" class="bg-blue-50 p-3 rounded-lg mb-2 shadow-sm">
+                        <p th:text="${note.content}" class="text-gray-800"></p>
+                        <p class="text-sm text-gray-500 mt-1"
+                           th:text="${#temporals.format(note.createdAt,'yyyy-MM-dd HH:mm')}">
+                            2025-02-01 10:00
+                        </p>
+                    </div>
+                </div>
+                <div th:if="${notes == null or #lists.isEmpty(notes)}"
+                     class="text-gray-600 text-center bg-blue-50 p-6 rounded-lg">
+                    No notes yet for this appointment.
+                </div>
+                <!-- Add a new note -->
+                <form th:action="@{/web/admin/overview/add-note}" method="post" class="mt-4">
+                    <input type="hidden" name="appointmentId" th:value="${currentAppointment?.id}" />
+                    <textarea name="noteContent"
+                              class="w-full border-2 border-blue-200 rounded-lg p-3
+                                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Enter note..."
+                              rows="4"></textarea>
+                    <button type="submit"
+                            class="mt-2 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                        Add Note
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const ctx = document.getElementById('miniChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon','Tue','Wed','Thu','Fri'],
+            datasets: [{
+                label: 'Daily Appointments',
+                data: [12, 7, 5, 9, 11],
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1,
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                }
+            }
+        }
+    });
+    /*]]>*/
+</script>
+
 </body>
 </html>
